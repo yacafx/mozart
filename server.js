@@ -4,10 +4,20 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 const topojson = require('topojson-client');
+const cors = require('cors');
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+// CORS config
+app.use(cors());
+
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    next();
+});
 
 
 app.get('/', function (req, res) {
