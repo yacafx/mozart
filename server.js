@@ -1,6 +1,5 @@
 const express = require("express");
 const path = require("path");
-const favicon = require("serve-favicon");
 const fs = require('fs');
 const https = require('https');
 const http = require('http');
@@ -8,15 +7,11 @@ const topojson = require('topojson-client');
 
 const app = express();
 
+const PORT = process.env.PORT || 3000;
 
 
-app.use(express.static(path.join(__dirname, "dist")));
-
-app.use(favicon(path.join(__dirname, "dist", "favicon.ico")));
-
-//  Arrow function     ()=>{}
 app.get('/', function (req, res) {
-    res.sendFile('index.html');
+    res.send('Bienvenido a la GEO API');
 });
 
 var apiV1 = express.Router();
@@ -56,34 +51,6 @@ apiV2.get('/paises', function (req, res) {
     res.send('info de países');
 });
 
-apiV2.get('/edomex', function (req, res) {
-
-    http.get('http://localhost:3000/DF_SCINCE.json', function (response) {
-
-        var body = '';
-
-        response.on('data', function (d) {
-            body += d;
-        });
-
-        response.on('end', function () {
-            try {
-                var edomex = JSON.parse(body);
-
-                res.status(200).json({
-                    status: true,
-                    edomex: edomex
-                });
-            } catch (err) {
-                console.error('Error: ', err);
-            }
-        })
-    })
-
-
-
-});
-
 
 
 apiV2.get('/paises/estados/ciudades', function (req, res) {
@@ -94,7 +61,7 @@ apiV2.get('/paises/estados/ciudades', function (req, res) {
 
     var worldJson = 'https://unpkg.com/world-atlas@1.1.4/world/110m.json';
 
-    fs.readFile('dist/cities.json', 'utf-8', function (err, data) {
+    fs.readFile('data/cities.json', 'utf-8', function (err, data) {
         //console.log(err, data);
         ciudades = JSON.parse(data).states;
 
@@ -135,19 +102,13 @@ apiV2.get('/paises/estados/ciudades', function (req, res) {
 
     });
 
-
-
-    //res.send('info de estados');
 });
-
-
-
 
 app.use('/api/v1', apiV1);
 app.use('/api/v2', apiV2);
 
 
-const PORT = 3000;
+
 
 app.listen(PORT, () => {
     console.log(`Server listening on port ${ PORT }`);
